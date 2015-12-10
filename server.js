@@ -1,9 +1,9 @@
-const middleware = require('./libs/json-response-middleware')
-const geoIpQuery = require('./libs/geo-ip-query')
+var url = require('url')
+var http = require('http')
+var middleware = require('./libs/json-response-middleware')
+var geoIpQuery = require('./libs/geo-ip-query')
 
 const port = process.env.PORT || 3000
-const url = require('url')
-const http = require('http')
 
 http.createServer((req, res) => {
     middleware(res)
@@ -13,14 +13,14 @@ http.createServer((req, res) => {
     console.log(`Request: ${req.url}`)
 
     if (parsedUrl.pathname != '/') {
-        res.notFound()
+        res.jsonNotFound()
         return
     }
 
     var ip = parsedUrl.query.ip
 
     if (!ip) {
-        res.error({
+        res.jsonError({
             type: 'ip_required'
         })
         return
@@ -28,7 +28,7 @@ http.createServer((req, res) => {
 
     geoIpQuery(ip).then(g => {
         if (!g){
-            res.error({
+            res.jsonError({
                 type: 'ip_not_found'
             }, {
                 ip: ip
@@ -36,12 +36,13 @@ http.createServer((req, res) => {
             return
         }
 
-        res.ok({
+        res.jsonOk({
             ip: ip,
             geo: g
         })
-    }).catch(e => {
-        res.error({
+    })
+    .catch(e => {
+        res.jsonError({
             type: 'invalid_ip'
         }, {
             ip: ip

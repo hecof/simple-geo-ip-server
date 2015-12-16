@@ -1,7 +1,7 @@
 var url = require('url')
 var http = require('http')
-var middleware = require('./libs/json-response-middleware')
-var geoIpQuery = require('./libs/geo-ip-query')
+var middleware = require('./lib/json-response-middleware')
+var geoIpQuery = require('./lib/geo-ip-query')
 
 const port = process.env.PORT || 3000
 
@@ -9,8 +9,6 @@ http.createServer((req, res) => {
     middleware(res)
 
     var parsedUrl = url.parse(req.url, true);
-
-    console.log(`Request: ${req.url}`)
 
     if (parsedUrl.pathname != '/') {
         res.jsonNotFound()
@@ -50,4 +48,4 @@ http.createServer((req, res) => {
     })
 }).listen(port)
 
-console.log(`Server listening on port ${port}`)
+//console.log(`Server listening on port ${port}`)
